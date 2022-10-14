@@ -1,19 +1,14 @@
 const io = require('socket.io-client');
 const fs = require('fs');
+require('dotenv').config();
 const { exec } = require("child_process");
 
-var reconnect, socket, init = false, token;
+var token;
+var socket = io.connect(process.env.URL_SERVER, { reconnection: true });
 
-function connect_socket() {
-    console.log('check connect');
-    if (!init) {
-        console.log('connecting');
-        socket = io.connect('http://100.21.42.138');
-        //socket = io.connect('http://127.0.0.1');
-    }
-}
-connect_socket();
-setInterval(connect_socket, 10000);
+socket.on('connect_failed', function () {
+    console.error('Connection Failed');
+})
 
 socket.on('connect', function () {
     console.log('Client connected');
@@ -63,4 +58,3 @@ socket.on('connect', function () {
         init = false;
     })
 })
-
