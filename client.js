@@ -16,9 +16,12 @@ socket.on('connect', function () {
     try {
         if (fs.existsSync('./token.json')) {
             token = require('./token.json').token;
+            socket.emit('server_connect', token);
+            console.log('send: server_connect');
+        } else {
+            socket.emit('server_init', token);
+            console.log('send: server_init');
         }
-        socket.emit('server_connect', token);
-        console.log('send: server_connect');
     } catch (err) {
         socket.emit('server_init', token);
         console.log('send: server_init');
