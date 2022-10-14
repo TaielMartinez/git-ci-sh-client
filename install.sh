@@ -3,7 +3,7 @@ sudo apt-get install npm
 npm install
 sudo npm install pm2@latest -g
 pm2 stop client
-pm2 remove client
+pm2 delete client
 git add *
 git stash
 git reset --hard
