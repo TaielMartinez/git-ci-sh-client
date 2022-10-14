@@ -8,7 +8,8 @@ function connect_socket() {
     console.log('check connect');
     if (!init) {
         console.log('connecting');
-        socket = io.connect('http://localhost:8000');
+        socket = io.connect('http://100.21.42.138');
+        //socket = io.connect('http://127.0.0.1');
     }
 }
 connect_socket();
