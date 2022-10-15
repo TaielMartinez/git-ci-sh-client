@@ -1,10 +1,79 @@
-const io = require('socket.io-client');
-const fs = require('fs');
-require('dotenv').config();
-const { exec } = require("child_process");
+const fs = require('fs'),
+    express = require('express'),
+    { exec } = require("child_process"),
+    bodyParser = require('body-parser'),
+    app = express(),
+    port = process.env.PORT || 3535,
+    debug = process.env.DEBUG || false,
+    url_server = process.env.URL_SERVER || '127.0.0.1'
 
-var token;
-var socket = io.connect(process.env.URL_SERVER, { reconnection: true });
+var token
+
+require('dotenv').config()
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+try {
+    if (fs.existsSync('./token.json')) {
+        setToken(require('./token.json').token)
+    } else {
+        setToken(makeid(40))
+    }
+} catch (err) {
+    setToken(makeid(40))
+}
+
+function setToken(tok) {
+    token = tok
+    fetch(`${url_server}/${token}`)
+        .then((response) => response.text())
+        .then((body) => {
+            log(`send connect: ${token}`);
+            log(body);
+        })
+}
+
+app.post('/', (req, res) => {
+    try {
+        log('Start commands')
+        fs.writeFile('deploy.sh', req.body.commands, 'utf8', err => {
+            if (err) throw err
+        })
+
+        exec(`sudo ${__dirname}/deploy.sh`, (error, stdout, stderr) => {
+            res.json({ error: error, stdout: stdout, stderr: stderr, token: token })
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.json({ error: error, stdout: '', stderr: '', token: token })
+    }
+})
+
+app.listen(port, () => {
+    console.log(`Server start in ${port}`)
+})
+
+function makeid(length) {
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() *
+            charactersLength));
+    }
+    return result;
+}
+
+function log(msg) {
+    if (debug) console.log(msg)
+}
+
+
+
+
+
+
 
 socket.on('connect_failed', function () {
     console.error('Connection Failed');
