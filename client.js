@@ -11,30 +11,11 @@ const fs = require('fs'),
     app = express(),
     port = process.env.PORT || 3535,
     debug = process.env.DEBUG || false,
+    token = process.env.TOKEN,
     url_server = process.env.URL_SERVER || '127.0.0.1'
-
-var token
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
-
-function setToken(tok) {
-    token = tok
-    const url_send = `${url_server}/${token}`
-    console.log(`Send request to: ${url_send}`)
-    request.get(
-        url_send, (error, response, body) => {
-            if (!error && response.statusCode == 200) {
-                log('Request susses:')
-                log(body)
-            } else {
-                log('Request error:')
-                log(error)
-                log(body)
-            }
-        }
-    )
-}
 
 app.post('/', (req, res) => {
     try {
@@ -54,29 +35,21 @@ app.post('/', (req, res) => {
 })
 
 app.listen(port, () => {
-    console.log(`Server start in ${port}`)
-
-    try {
-        if (fs.existsSync('./token.json')) {
-            setToken(require('./token.json').token)
-        } else {
-            setToken(makeid(40))
+    console.log(`Server start in ${port} port`)
+    console.log(`Send request to: ${url_server}/${token}`)
+    request.get(
+        `${url_server}/${token}`, (error, response, body) => {
+            if (!error && response.statusCode == 200) {
+                log('Request susses:')
+                log(body)
+            } else {
+                log('Request error:')
+                log(error)
+                log(body)
+            }
         }
-    } catch (err) {
-        setToken(makeid(40))
-    }
+    )
 })
-
-function makeid(length) {
-    var result = ''
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    var charactersLength = characters.length
-    for (var i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() *
-            charactersLength))
-    }
-    return result
-}
 
 function log(msg) {
     if (debug) console.log(msg)
