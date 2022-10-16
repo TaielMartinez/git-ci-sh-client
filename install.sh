@@ -2,8 +2,8 @@ sudo apt-get install nodejs
 sudo apt-get install npm
 npm install
 sudo npm install pm2@latest -g
-pm2 stop client
-pm2 delete client
+pm2 stop 0
+pm2 delete 0
 git add *
 git stash
 git reset --hard

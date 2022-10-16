@@ -19,6 +19,6 @@
   "homepage": "https://github.com/TaielMartinez/git-continuous-integration-comands#readme",
   "dependencies": {
     "child_process": "^1.0.2",
-    "dotenv": "^16.0.3",
+    "dotenv": "^16.0.3"
   }
 }
