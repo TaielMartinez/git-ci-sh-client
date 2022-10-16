@@ -1,5 +1,5 @@
 for (let i = 0; i < 10; i++) {
-    console.log('-');
+    console.log('-')
 }
 
 const fs = require('fs'),
@@ -15,8 +15,8 @@ const fs = require('fs'),
 var token
 
 require('dotenv').config()
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
 
 try {
     if (fs.existsSync('./token.json')) {
@@ -30,20 +30,20 @@ try {
 
 function setToken(tok) {
     token = tok
-
+    const url_send = `${url_server}/${token}`
+    console.log(`Send request to: ${url_send}`)
     request.get(
-        `${url_server}/${token}`,
-        function (error, response, body) {
+        url_send, (error, response, body) => {
             if (!error && response.statusCode == 200) {
-                log('Request susses:');
-                log(body);
+                log('Request susses:')
+                log(body)
             } else {
-                log('Request error:');
-                log(error);
-                log(body);
+                log('Request error:')
+                log(error)
+                log(body)
             }
         }
-    );
+    )
 }
 
 app.post('/', (req, res) => {
@@ -55,10 +55,10 @@ app.post('/', (req, res) => {
 
         exec(`sudo ${__dirname}/deploy.sh`, (error, stdout, stderr) => {
             res.json({ error: error, stdout: stdout, stderr: stderr, token: token })
-        });
+        })
 
     } catch (error) {
-        console.error(error);
+        console.error(error)
         res.json({ error: error, stdout: '', stderr: '', token: token })
     }
 })
@@ -68,14 +68,14 @@ app.listen(port, () => {
 })
 
 function makeid(length) {
-    var result = '';
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
+    var result = ''
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    var charactersLength = characters.length
     for (var i = 0; i < length; i++) {
         result += characters.charAt(Math.floor(Math.random() *
-            charactersLength));
+            charactersLength))
     }
-    return result;
+    return result
 }
 
 function log(msg) {
@@ -89,57 +89,57 @@ function log(msg) {
 
 
 socket.on('connect_failed', function () {
-    console.error('Connection Failed');
+    console.error('Connection Failed')
 })
 
 socket.on('connect', function () {
-    console.log('Client connected');
-    init = true;
+    console.log('Client connected')
+    init = true
     try {
         if (fs.existsSync('./token.json')) {
-            token = require('./token.json').token;
-            socket.emit('server_connect', token);
-            console.log('send: server_connect');
+            token = require('./token.json').token
+            socket.emit('server_connect', token)
+            console.log('send: server_connect')
         } else {
-            socket.emit('server_init', token);
-            console.log('send: server_init');
+            socket.emit('server_init', token)
+            console.log('send: server_init')
         }
     } catch (err) {
-        socket.emit('server_init', token);
-        console.log('send: server_init');
+        socket.emit('server_init', token)
+        console.log('send: server_init')
     }
 
     socket.on('first_connected', tok => {
-        console.log('first_connected');
-        token = tok;
+        console.log('first_connected')
+        token = tok
         fs.writeFile('token.json', JSON.stringify({ token: token }), 'utf8', err => {
             if (err) {
-                console.log(err);
+                console.log(err)
             }
         })
     })
 
     socket.on('check_status_server', () => {
-        console.log('check_status_server');
-        socket.emit('check_status_server', token);
+        console.log('check_status_server')
+        socket.emit('check_status_server', token)
     })
 
     socket.on('run_commands', (commands, code) => {
-        console.log('run_commands');
+        console.log('run_commands')
         fs.writeFile('deploy.sh', commands, 'utf8', err => {
             if (err) {
-                console.log("Error: ", err);
-                return;
+                console.log("Error: ", err)
+                return
             }
         })
 
         exec(`sudo ${__dirname}/deploy.sh`, (error, stdout, stderr) => {
-            socket.emit('run_commands_res', { error: error, stdout: stdout, stderr: stderr, code: code });
-            console.log('send run_commands_res', error, stdout, stderr, code);
-        });
+            socket.emit('run_commands_res', { error: error, stdout: stdout, stderr: stderr, code: code })
+            console.log('send run_commands_res', error, stdout, stderr, code)
+        })
     })
 
     socket.on('disconnect', () => {
-        init = false;
+        init = false
     })
 })
