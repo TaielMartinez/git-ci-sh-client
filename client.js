@@ -18,16 +18,6 @@ var token
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
-try {
-    if (fs.existsSync('./token.json')) {
-        setToken(require('./token.json').token)
-    } else {
-        setToken(makeid(40))
-    }
-} catch (err) {
-    setToken(makeid(40))
-}
-
 function setToken(tok) {
     token = tok
     const url_send = `${url_server}/${token}`
@@ -65,6 +55,16 @@ app.post('/', (req, res) => {
 
 app.listen(port, () => {
     console.log(`Server start in ${port}`)
+
+    try {
+        if (fs.existsSync('./token.json')) {
+            setToken(require('./token.json').token)
+        } else {
+            setToken(makeid(40))
+        }
+    } catch (err) {
+        setToken(makeid(40))
+    }
 })
 
 function makeid(length) {
