@@ -2,6 +2,7 @@ for (let i = 0; i < 10; i++) {
     console.log('-')
 }
 
+require('dotenv').config()
 const fs = require('fs'),
     express = require('express'),
     { exec } = require("child_process"),
@@ -14,7 +15,6 @@ const fs = require('fs'),
 
 var token
 
-require('dotenv').config()
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
