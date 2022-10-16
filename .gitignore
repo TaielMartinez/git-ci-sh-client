@@ -2,3 +2,4 @@ token.json
 deploy.sh
 .env
 /.history
+node_modules
