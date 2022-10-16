@@ -1,3 +1,7 @@
+for (let i = 0; i < 10; i++) {
+    console.log('-');
+}
+
 const fs = require('fs'),
     express = require('express'),
     { exec } = require("child_process"),
