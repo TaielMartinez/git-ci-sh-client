@@ -6,7 +6,7 @@ const fs = require('fs'),
     express = require('express'),
     { exec } = require("child_process"),
     bodyParser = require('body-parser'),
-    fetch = require("node-fetch"),
+    request = require('http'),
     app = express(),
     port = process.env.PORT || 3535,
     debug = process.env.DEBUG || false,
@@ -30,12 +30,20 @@ try {
 
 function setToken(tok) {
     token = tok
-    fetch(`${url_server}/${token}`)
-        .then((response) => response.text())
-        .then((body) => {
-            log(`send connect: ${token}`);
-            log(body);
-        })
+
+    request.get(
+        `${url_server}/${token}`,
+        function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+                log('Request susses:');
+                log(body);
+            } else {
+                log('Request error:');
+                log(error);
+                log(body);
+            }
+        }
+    );
 }
 
 app.post('/', (req, res) => {
